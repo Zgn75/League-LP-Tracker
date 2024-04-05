@@ -9,7 +9,7 @@ The user can type in the textbox in the gui (i was too lazy to lock it) so will 
 If you have any questions, feel free to ask me through the [Issues](https://github.com/Zgn75/League-LP-Tracker/issues) page.
 
 
-# ⚠️ IF YOU HAVE ANY SUSPICIONS ABOUT THIS PROJECT ⚠️
+# ⚠️ READ THIS IF YOU HAVE ANY SUSPICIONS ABOUT THIS PROJECT ⚠️
 
 This won't get you banned in any way,
 
