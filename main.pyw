@@ -154,11 +154,18 @@ class templates():
 
 """
     defaultrank = "1\n4\n0"
-    items = {"lol.ico":download_img(file_path, "lol.png", "https://i.postimg.cc/8zdm3x9S/lol.png"), "essentials.py":file_write(f"{file_path}\\essentials.py", package), "rank.txt":file_write(f"{file_path}\\rank.txt", defaultrank)}
+    items = ["lol.ico", "essentials.py", "rank.txt"]
 
     for item in items:
+        print(item)
         if not os.path.exists(file_path + "\\%s" % item):
-            items[item]
+            if items[0] == item:
+                download_img(file_path, "lol.png", "https://i.postimg.cc/8zdm3x9S/lol.png")
+            if items[1] == item:
+                file_write(f"{file_path}\\essentials.py", package)
+            if items[2] == item:
+                file_write(f"{file_path}\\rank.txt", defaultrank)
+
 
 look_for_files()
 
@@ -222,7 +229,7 @@ class league():
             num = self.substring_after(interact, "-")
             afterlp = int(lp) - int(num)
             if afterlp < 0:
-                afterlp = 75
+                afterlp = 50
                 if league == 4:
                     numrank -= 1
                     league = 1
@@ -236,16 +243,18 @@ class league():
         elif interact[0] == "+":
             num = self.substring_after(interact, "+")
             afterlp = int(lp) + int(num)
-            if afterlp > 99:
-                afterlp = afterlp - 100
-                afterlp = str(afterlp).replace("+","")
-                if league == 1:
-                    numrank += 1
-                    league = 4
-                elif league > 1:
-                    league -= 1
-                if numrank > 5:
-                    numrank = 5
+            while int(afterlp) > 99:
+                    afterlp = int(afterlp)
+                    afterlp = afterlp - 100
+                    afterlp = str(afterlp).replace("+","")
+                    if league == 1:
+                        numrank += 1
+                        league = 4
+                    elif league > 1:
+                        league -= 1
+                    if numrank > 5:
+                        numrank = 5
+            
             data = f"{numrank}\n{league}\n{afterlp}"
             file.write(file_path + "\\rank.txt", data)
 
@@ -255,6 +264,8 @@ class LeagueGUI(customtkinter.CTk):
 
         customtkinter.set_appearance_mode("System")
         customtkinter.set_default_color_theme("dark-blue")
+
+        self.resizable(False, False)
 
         self.title("League WR Ratio")
         self.iconbitmap(file_path + "\\lol.ico") # Get the ico from appdata
@@ -280,8 +291,18 @@ class LeagueGUI(customtkinter.CTk):
         self.geometry(f"{self.app_width}x{self.app_height}+{int(x)}+{int(y)}")
 
     def update_textbox(self):
+        self.textbox.configure(state="normal")
         self.textbox.delete("0.0", customtkinter.END)
-        self.textbox.insert("0.0", "\t\tWR Ratio\n\n\n" + league.get_text(league))
+        x = league.get_text(league)
+        t = [i.strip() for i in x.splitlines()]
+        text = []
+        for line in t:
+            if not line == t[-1]:
+                text.append("\t            " + line)
+                continue
+            text.append(line)
+        self.textbox.insert("0.0", "\t\tLP Tracker\n\n\n" + '\n'.join(text))
+        self.textbox.configure(state="disabled")
 
     def open_input_dialog_event(self):
         dialog = customtkinter.CTkInputDialog(text="Enter your LP\n(such as +25 or -8)", title="League WR Ratio")
