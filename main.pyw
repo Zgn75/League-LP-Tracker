@@ -316,7 +316,7 @@ class LeagueGUI(customtkinter.CTk):
 
         self.tabview.grid(row=0, column=3, padx=(20, 0), pady=(20, 0), sticky="nsew")
         self.textbox = customtkinter.CTkTextbox(width=300, height=150, master=self.tabview.tab("View Stats"))
-        self.button = customtkinter.CTkButton(master=first_tab, text="Match Result", command=self.open_input_dialog_event)
+        self.button = customtkinter.CTkButton(master=self.tabview.tab("View Stats"), text="Match Result", command=self.open_input_dialog_event)
         self.logo_label = customtkinter.CTkLabel(self, text="Made by Zgn", font=customtkinter.CTkFont(size=16, weight="bold"))
 
         self.textbox.grid(column=0, row=0,padx=(0,0), pady=(0,75))
