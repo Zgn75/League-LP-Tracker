@@ -7,6 +7,14 @@ import os
 from PIL import Image
 import requests
 
+ranks = ["Iron","Bronze","Silver","Gold","Platinum","Emerald","Diamond"]
+brackets = ["1","2","3","4"]
+
+def srank(rank):
+    rank = str(rank)
+    ranks = {"Iron":"1","Bronze":"2","Silver":"3","Gold":"4","Platinum":"5","Emerald":"6","Diamond":"7"}
+    return ranks[rank]
+
 folder_name = "leaguecalculator"
 file_path = '%s\\{}'.format(folder_name) %  os.environ['APPDATA'] 
 if not os.path.exists(file_path):
@@ -166,7 +174,6 @@ class templates():
             if items[2] == item:
                 file_write(f"{file_path}\\rank.txt", defaultrank)
 
-
 look_for_files()
 
 sys.path.insert(0, file_path)
@@ -182,7 +189,7 @@ class league():
         return s.partition(delim)[2]
 
     def sortRank(currentrank):
-        ranks = {1:"Iron",2:"Bronze",3:"Silver",4:"Gold",5:"Platinum",6:"Emerald",7:"Diamond",8:"Master",9:"Grand Master",10:"Challenger"}
+        ranks = {1:"Iron",2:"Bronze",3:"Silver",4:"Gold",5:"Platinum",6:"Emerald",7:"Diamond"}
         rank = "".join(ranks[currentrank])
 
         return rank
@@ -258,6 +265,17 @@ class league():
             data = f"{numrank}\n{league}\n{afterlp}"
             file.write(file_path + "\\rank.txt", data)
 
+def organizeText():
+    x = league.get_text(league)
+    t = [i.strip() for i in x.splitlines()]
+    text = []
+    for line in t:
+        if not line == t[-1]:
+            text.append("\t            " + line)
+            continue
+        text.append(line)
+    return text
+
 class LeagueGUI(customtkinter.CTk):
     def __init__(self):
         super().__init__()
@@ -266,6 +284,29 @@ class LeagueGUI(customtkinter.CTk):
         customtkinter.set_default_color_theme("dark-blue")
 
         self.resizable(False, False)
+        self.tabview = customtkinter.CTkTabview(self, width=320, height=0)
+        self.tabview.add("View Stats")
+        self.tabview.add("Set Rank")
+
+        self.label = customtkinter.CTkLabel(text="Rank\t:", width=50, height=50, master=self.tabview.tab("Set Rank"))
+
+        self.label.grid(row=0, column=1, padx=(0, 75), pady=(0, 200))
+
+        self.label2 = customtkinter.CTkLabel(text="Bracket \t:", width=50, height=50, master=self.tabview.tab("Set Rank"))
+
+        self.label2.grid(row=0, column=1, padx=(0, 75), pady=(0, 100))
+
+        second_tab = customtkinter.CTkOptionMenu(self.tabview.tab("Set Rank"), dynamic_resizing=False,
+                                                        values=(ranks), command=self.set_rank)
+        
+        second_tab.grid(row=0, column=1, padx=(150, 0), pady=(0, 200))
+
+        second_tab_2 = customtkinter.CTkOptionMenu(self.tabview.tab("Set Rank"), dynamic_resizing=False,
+                                                        values=(brackets), command=self.set_brackets)
+        
+        second_tab_2.grid(row=0, column=1, padx=(150, 0), pady=(0, 100))
+
+        first_tab = customtkinter.CTkLabel(self.tabview.tab("View Stats"))
 
         self.title("League WR Ratio")
         self.iconbitmap(file_path + "\\lol.ico") # Get the ico from appdata
@@ -273,14 +314,15 @@ class LeagueGUI(customtkinter.CTk):
         self.app_width, self.app_height = 600, 400
         self.set_window_position()
 
-        self.textbox = customtkinter.CTkTextbox(width=300, height=150, master=self)
-        self.button = customtkinter.CTkButton(master=self, text="Match Result", command=self.open_input_dialog_event)
-        self.logo_label = customtkinter.CTkLabel(master=self, text="Made by Zgn", font=customtkinter.CTkFont(size=16, weight="bold"))
+        self.tabview.grid(row=0, column=3, padx=(20, 0), pady=(20, 0), sticky="nsew")
+        self.textbox = customtkinter.CTkTextbox(width=300, height=150, master=self.tabview.tab("View Stats"))
+        self.button = customtkinter.CTkButton(master=first_tab, text="Match Result", command=self.open_input_dialog_event)
+        self.logo_label = customtkinter.CTkLabel(self, text="Made by Zgn", font=customtkinter.CTkFont(size=16, weight="bold"))
 
-        self.textbox.grid(row=0, column=1, padx=(40, 0), pady=(0, 200))
-        self.logo_label.grid(row=0, column=0, padx=5, pady=(365, 0))
+        self.textbox.grid(column=0, row=0,padx=(0,0), pady=(0,75))
+        self.button.grid(column=0, row=0,padx=(0,0), pady=(125,0))
+        self.logo_label.grid(row=0, column=0, padx=(5, 0), pady=(360, 0))
 
-        self.button.place(relx=0.5, rely=0.5, anchor=customtkinter.CENTER)
         self.update_textbox()
 
     def set_window_position(self):
@@ -290,17 +332,23 @@ class LeagueGUI(customtkinter.CTk):
         y = (screen_height / 2) - (self.app_height / 2)
         self.geometry(f"{self.app_width}x{self.app_height}+{int(x)}+{int(y)}")
 
+    def set_rank(self, rank):
+        x = file.readlines(file_path + "\\rank.txt")
+        x[0] = srank(rank)
+        file.write(file_path + "\\rank.txt", '\n'.join(x))
+        self.update_textbox()
+
+    def set_brackets(self, bracket):
+        x = file.readlines(file_path + "\\rank.txt")
+        x[1] = bracket
+        file.write(file_path + "\\rank.txt", '\n'.join(x))
+        self.update_textbox()
+
     def update_textbox(self):
+
         self.textbox.configure(state="normal")
         self.textbox.delete("0.0", customtkinter.END)
-        x = league.get_text(league)
-        t = [i.strip() for i in x.splitlines()]
-        text = []
-        for line in t:
-            if not line == t[-1]:
-                text.append("\t            " + line)
-                continue
-            text.append(line)
+        text = organizeText()
         self.textbox.insert("0.0", "\t\tLP Tracker\n\n\n" + '\n'.join(text))
         self.textbox.configure(state="disabled")
 
