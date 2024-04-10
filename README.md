@@ -7,10 +7,8 @@ If you have any questions, feel free to ask me through the [Issues](https://gith
 
 Minor changes such as organizing the code and simplfying the processes
 
-## ⚠️ READ THIS IF YOU HAVE ANY SUSPICIONS ABOUT THIS PROJECT ⚠️
+## Overview
 
-This won't get you banned in any way,
+[![resim-2024-04-11-002422372.png](https://i.postimg.cc/L8bDD4P2/resim-2024-04-11-002422372.png)](https://postimg.cc/w1DDTpFG)
 
-it doesn't even use riot API therefore makes your account impossible from being affected from using this program,
-
-the code is open source so if you have any doubts this program would be safe, feel free to check the code. Enjoy.
+[![resim-2024-04-11-002510644.png](https://i.postimg.cc/tTtFK9s1/resim-2024-04-11-002510644.png)](https://postimg.cc/34Nyp5C7)
