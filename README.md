@@ -3,11 +3,9 @@ A program that lets you track your LP through a GUI.
 
 If you have any questions, feel free to ask me through the [Issues](https://github.com/Zgn75/League-LP-Tracker/issues) page.
 
-# 1.2 Devlogs
+# 1.3 Devlogs
 
-Added new features, fixed bugs
-
-Able to access/change data easier
+Minor changes such as organizing the code and simplfying the processes
 
 ## ⚠️ READ THIS IF YOU HAVE ANY SUSPICIONS ABOUT THIS PROJECT ⚠️
 
