@@ -1,5 +1,7 @@
+import tkinter.messagebox
 import customtkinter
 import re
+import tkinter
 import os
 import math
 import sys
@@ -290,6 +292,7 @@ class LeagueGUI(customtkinter.CTk):
         self.label_2 = customtkinter.CTkLabel(text="Bracket \t:", width=50, height=50, master=self.tabview.tab("Set Rank"))
         self.textbox = customtkinter.CTkTextbox(width=300, height=150, master=self.tabview.tab("View Stats"))
         self.button = customtkinter.CTkButton(master=self.tabview.tab("View Stats"), text="Match Result", command=self.open_input_dialog_event)
+        self.button_2 = customtkinter.CTkButton(master=self.tabview.tab("View Stats"), text="Reset LP", width=10, height=26,command=self.reset_lp)
         self.logo_label = customtkinter.CTkLabel(self, text="Made by Zgn", font=customtkinter.CTkFont(size=16, weight="bold"))
 
         self.textbox.grid(column=0, row=0,padx=(0,0), pady=(0,75))
@@ -297,7 +300,8 @@ class LeagueGUI(customtkinter.CTk):
         second_tab_2.grid(row=0, column=1, padx=(150, 0), pady=(0, 100))
         self.label.grid(row=0, column=1, padx=(0, 75), pady=(0, 200))
         self.label_2.grid(row=0, column=1, padx=(0, 75), pady=(0, 100))
-        self.button.grid(column=0, row=0,padx=(0,0), pady=(125,0))
+        self.button.grid(column=0, row=0,padx=(70,0), pady=(125,0))
+        self.button_2.grid(column=0, row=0,padx=(0,140), pady=(125,0))
         self.logo_label.grid(row=0, column=0, padx=(5, 0), pady=(360, 0))
 
         self.update_textbox()
@@ -318,6 +322,16 @@ class LeagueGUI(customtkinter.CTk):
     def set_brackets(self, bracket):
         x = file.readlines(os.path.join(file_path, "rank.txt"))
         x[1] = bracket
+        file.write(os.path.join(file_path, "rank.txt"), '\n'.join(x))
+        self.update_textbox()
+    
+    def reset_lp(self):
+        q=tkinter.messagebox.askquestion(title=None, message="Are you sure that you are going to reset your LP?")
+        if q!="yes":
+            return
+        
+        x = file.readlines(os.path.join(file_path, "rank.txt"))
+        x[2] = "0"
         file.write(os.path.join(file_path, "rank.txt"), '\n'.join(x))
         self.update_textbox()
 
