@@ -233,8 +233,11 @@ class league():
             data = f"{numrank}\n{league}\n{afterlp}"
             file.write(os.path.join(file_path, "rank.txt"), data)
             
-        elif interact[0] == "+":
-            num = self.substring_after(interact, "+")
+        elif interact[0] == "+" or interact.isdigit():
+            if not interact.isdigit():
+                num = self.substring_after(interact, "+")
+            else:
+                num = int(interact)
             afterlp = int(lp) + int(num)
             while int(afterlp) > 99:
                 afterlp = int(afterlp)
@@ -316,13 +319,13 @@ class LeagueGUI(customtkinter.CTk):
     def set_rank(self, rank):
         x = file.readlines(os.path.join(file_path, "rank.txt"))
         x[0] = srank(rank)
-        file.write(os.path.join(file_path, "rank.txt"), '\n'.join(x))
+        file.write(os.path.join(file_path, "rank.txt"), ''.join(x))
         self.update_textbox()
 
     def set_brackets(self, bracket):
         x = file.readlines(os.path.join(file_path, "rank.txt"))
         x[1] = bracket
-        file.write(os.path.join(file_path, "rank.txt"), '\n'.join(x))
+        file.write(os.path.join(file_path, "rank.txt"), ''.join(x))
         self.update_textbox()
     
     def reset_lp(self):
@@ -332,7 +335,7 @@ class LeagueGUI(customtkinter.CTk):
         
         x = file.readlines(os.path.join(file_path, "rank.txt"))
         x[2] = "0"
-        file.write(os.path.join(file_path, "rank.txt"), '\n'.join(x))
+        file.write(os.path.join(file_path, "rank.txt"), ''.join(x))
         self.update_textbox()
 
     def update_textbox(self):
