@@ -6,3 +6,5 @@ If you have any questions, feel free to ask me through the [Issues](https://gith
 # 1.5 Devlogs
 
 Bugfixes overall
+
+Windows flags this program as a trojan which really isn't so I'll be working on removing the flag in the next update.
