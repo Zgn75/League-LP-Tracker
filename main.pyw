@@ -154,11 +154,11 @@ class templates():
 
 """
 
-    defaultrank = "1\n4\n0"
+    defaultrank = "1\n4\n0\n20 25"
     items = ["lol.ico", "essentials.py", "rank.txt"]
 
     for item in items:
-        print(item)
+        print('Checking "' + item + '"...')
         if not os.path.exists(os.path.join(file_path, item)):
             if items[0] == item:
                 download_img(file_path, "lol.png", "https://i.postimg.cc/8zdm3x9S/lol.png")
@@ -190,30 +190,31 @@ class league():
 
     def get_rank(self):
         txt = file.read(os.path.join(file_path, "rank.txt")).split()
-        currentrank = int(txt[0])
-        league = txt[1]
+        currentrank = txt[0]
+        bracket = txt[1]
         lp = int(txt[2])
-        return [self.sortRank(currentrank), league, lp, currentrank]
+        gains = txt[3].replace("-", " ").split()
+        p_gains, s_gains = gains[1], gains[0]
+        return [self.sortRank(int(currentrank)), bracket, lp, p_gains, s_gains]
 
     def get_text(self):
         data = self.get_rank(self)
         rank = data[0]
-        league = int(data[1])
+        bracket = int(data[1])
         lp = int(data[2])
+        gains = int(self.round_up(int(data[3]) - (int(data[3]) / int(data[4])), 0))
 
-        game = (int((100 - lp) / 20))
+        game = (100 - lp) / gains
         game = int(self.round_up(game, 0))
         if game < 1:
             game = 1
-        avglp = int(100 - lp) / game
-        avglp = int(self.round_up(avglp, 0))
         addition = "s" if game > 1 else ""
-        return f"You are {rank} {league}, {lp} lp. \n+{100 - lp} lp's to rankup.\nEstimated {game} (+{avglp} lp per) game{addition} away from rankup."
+        return f"You are {rank} {bracket}, {lp} lp. \n+{100 - lp} lp's to rankup.\nEstimated {game} (+{gains} lp per) game{addition} away from rankup."
 
     def get_newrank(interact, self):
         data = self.get_rank(self)
         numrank = int(data[3])
-        league = int(data[1])
+        bracket = int(data[1])
         lp = int(data[2])
 
         if interact is None:
@@ -223,14 +224,14 @@ class league():
             afterlp = int(lp) - int(num)
             if afterlp < 0:
                 afterlp = 50
-                if league == 4:
+                if bracket == 4:
                     numrank -= 1
-                    league = 1
-                elif league < 4:
-                    league += 1
+                    bracket = 1
+                elif bracket < 4:
+                    bracket += 1
                 if numrank < 1:
                     numrank = 1
-            data = f"{numrank}\n{league}\n{afterlp}"
+            data = f"{numrank}\n{bracket}\n{afterlp}\n{gains}"
             file.write(os.path.join(file_path, "rank.txt"), data)
             
         elif interact[0] == "+" or interact.isdigit():
@@ -279,10 +280,11 @@ class LeagueGUI(customtkinter.CTk):
 
         ranks = ["Iron","Bronze","Silver","Gold","Platinum","Emerald","Diamond"]
         brackets = ["1","2","3","4"]
+        gains = ["15-20", "20-25", "25-30", "30-40"]
 
         second_tab = customtkinter.CTkOptionMenu(self.tabview.tab("Set Rank"), dynamic_resizing=False, values=(ranks), command=self.set_rank)
-
         second_tab_2 = customtkinter.CTkOptionMenu(self.tabview.tab("Set Rank"), dynamic_resizing=False, values=(brackets), command=self.set_brackets)
+        second_tab_3 = customtkinter.CTkOptionMenu(self.tabview.tab("Set Rank"), dynamic_resizing=False, values=(gains), command=self.set_gains)
 
         self.title("League WR Ratio")
         self.iconbitmap(os.path.join(file_path, "lol.ico"))
@@ -293,6 +295,7 @@ class LeagueGUI(customtkinter.CTk):
         self.tabview.grid(row=0, column=3, padx=(20, 0), pady=(20, 0), sticky="nsew")
         self.label = customtkinter.CTkLabel(text="Rank\t:", width=50, height=50, master=self.tabview.tab("Set Rank"))
         self.label_2 = customtkinter.CTkLabel(text="Bracket \t:", width=50, height=50, master=self.tabview.tab("Set Rank"))
+        self.label_3 = customtkinter.CTkLabel(text="Gains \t:", width=50, height=50, master=self.tabview.tab("Set Rank"))
         self.textbox = customtkinter.CTkTextbox(width=300, height=150, master=self.tabview.tab("View Stats"))
         self.button = customtkinter.CTkButton(master=self.tabview.tab("View Stats"), text="Match Result", command=self.open_input_dialog_event)
         self.button_2 = customtkinter.CTkButton(master=self.tabview.tab("View Stats"), text="Reset LP", width=10, height=26,command=self.reset_lp)
@@ -301,8 +304,10 @@ class LeagueGUI(customtkinter.CTk):
         self.textbox.grid(column=0, row=0,padx=(0,0), pady=(0,75))
         second_tab.grid(row=0, column=1, padx=(150, 0), pady=(0, 200))
         second_tab_2.grid(row=0, column=1, padx=(150, 0), pady=(0, 100))
+        second_tab_3.grid(row=0, column=1, padx=(150, 0), pady=(0, 0))
         self.label.grid(row=0, column=1, padx=(0, 75), pady=(0, 200))
         self.label_2.grid(row=0, column=1, padx=(0, 75), pady=(0, 100))
+        self.label_3.grid(row=0, column=1, padx=(0, 75), pady=(0, 0))
         self.button.grid(column=0, row=0,padx=(70,0), pady=(125,0))
         self.button_2.grid(column=0, row=0,padx=(0,140), pady=(125,0))
         self.logo_label.grid(row=0, column=0, padx=(5, 0), pady=(360, 0))
@@ -318,13 +323,13 @@ class LeagueGUI(customtkinter.CTk):
 
     def set_rank(self, rank):
         x = file.readlines(os.path.join(file_path, "rank.txt"))
-        x[0] = srank(rank)
+        x[0] = srank(rank) + "\n"
         file.write(os.path.join(file_path, "rank.txt"), ''.join(x))
         self.update_textbox()
 
     def set_brackets(self, bracket):
         x = file.readlines(os.path.join(file_path, "rank.txt"))
-        x[1] = bracket
+        x[1] = bracket + "\n"
         file.write(os.path.join(file_path, "rank.txt"), ''.join(x))
         self.update_textbox()
     
@@ -334,7 +339,13 @@ class LeagueGUI(customtkinter.CTk):
             return
         
         x = file.readlines(os.path.join(file_path, "rank.txt"))
-        x[2] = "0"
+        x[2] = "0" + "\n"
+        file.write(os.path.join(file_path, "rank.txt"), ''.join(x))
+        self.update_textbox()
+
+    def set_gains(self, gains):
+        x = file.readlines(os.path.join(file_path, "rank.txt"))
+        x[3] = gains
         file.write(os.path.join(file_path, "rank.txt"), ''.join(x))
         self.update_textbox()
 
