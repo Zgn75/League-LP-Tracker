@@ -195,7 +195,7 @@ class league():
         lp = int(txt[2])
         gains = txt[3].replace("-", " ").split()
         p_gains, s_gains = gains[1], gains[0]
-        return [self.sortRank(int(currentrank)), bracket, lp, p_gains, s_gains]
+        return [self.sortRank(int(currentrank)), bracket, lp, p_gains, s_gains, currentrank]
 
     def get_text(self):
         data = self.get_rank(self)
@@ -213,9 +213,10 @@ class league():
 
     def get_newrank(interact, self):
         data = self.get_rank(self)
-        numrank = int(data[3])
         bracket = int(data[1])
         lp = int(data[2])
+        gains = data[3] + "-" + data[4]
+        numrank = data[5]
 
         if interact is None:
             return
@@ -244,15 +245,15 @@ class league():
                 afterlp = int(afterlp)
                 afterlp = afterlp - 100
                 afterlp = str(afterlp).replace("+","")
-                if league == 1:
+                if gains == 1:
                     numrank += 1
-                    league = 4
-                elif league > 1:
-                    league -= 1
+                    gains = 4
+                elif gains > 1:
+                    gains -= 1
                 if numrank > 5:
                     numrank = 5
             
-            data = f"{numrank}\n{league}\n{afterlp}"
+            data = f"{numrank}\n{bracket}\n{afterlp}\n{gains}"
             file.write(os.path.join(file_path, "rank.txt"), data)
 
 def organizeText():
